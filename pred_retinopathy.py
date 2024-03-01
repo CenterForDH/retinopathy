@@ -1,10 +1,11 @@
 import pickle
-import numpy as np
 import streamlit as st
 import time
-from PIL import Image
 
-# st.set_page_config(layout="wide")
+from pathlib import Path
+import xgboost as xgb
+
+#st.set_page_config(layout="wide")
 
 st.markdown(
     """
@@ -14,7 +15,6 @@ st.markdown(
     .viewerBadge_text__1JaDK {
         display: none;
     }
-    font="sans serif"
     </style>
     """,
     unsafe_allow_html=True
@@ -48,39 +48,27 @@ text-align: center;
 
 st.markdown(str(footerText), unsafe_allow_html=True)
 
-
 @st.cache_data
+#sub_finalized_model_adb predict_substance_model
 def model_file():
-    mfile = 'retinopathy.pkl'
-    model = pickle.load(open(mfile, 'rb'))
+    mfile = str(Path(__file__).parent) + '/pred_retinopathy.pkl'
+    with open(mfile, 'rb') as file:
+        model = pickle.load(file)
     return model
+
+# predict_substance_model
+# sub_finalized_model_lgb
 
 
 def prediction(X_test):
     model = model_file()
-    result = model.predict([X_test])
-    result = np.exp(result)
-    return result
+    result = model.predict_proba([X_test])
 
-def ci_95(input):
-    pre=[]
-    for i in range(100):
-        noise = np.random.normal(0, 0.1, size=len(input))
-        input_with_noise = input + noise
-
-        result=prediction(input_with_noise)
-        pre.append(result)
-    mean_prediction = np.mean(pre)
-    std_prediction = np.std(pre)
-    lower_bound = mean_prediction - 1.96 * std_prediction
-    upper_bound = mean_prediction + 1.96 * std_prediction
-    return lower_bound,upper_bound
+    return result[0][1]
 
 def input_values():
-    st.markdown("""---""")
-
-    # 'age'와 'sex' 입력 받기
     age = st.number_input('나이', min_value=10, max_value=100, value=30)
+    
     sex = st.radio('성별', ('남자', '여자'), horizontal=True)
     sexDict = {'남자': 1, '여자': 2}
     sex = sexDict[sex]
@@ -113,7 +101,7 @@ def input_values():
     ALP_std = st.number_input('ALP (std)', min_value=0.0, max_value=115.96551211, value=30.0)
     BMI_std = st.number_input('BMI (std)', min_value=0.0, max_value=11.596551211, value=3.0)
 
-    # 이진 변수 입력 받기 (여기서는 예시로 몇 가지만 추가함)
+    # 이진 변수 입력 받기
     binary_cols = ['met', 'sul', 'dpp', 'mg', 'thia', 'glu', 'insul', 'glp', 'sglt', 'angio', 'convert', 'cal', 'di', 
                    'beta', 'sta', 'fi', 'eze', 'aspi', 'clo', 'cil', 'gly', 'hypertension', 'dyslipidemia', 
                    'parkinson', 'demen', 'kidney', 'endstage', 'neuro', 'malignant', 'CCD', 'PL']
@@ -128,6 +116,7 @@ def input_values():
               AST_std, ALT_std, GGT_std, ALP_std, BMI_std] + binary_inputs
 
     return X_test
+
 
 def main():
     st.title("예측 모델")
@@ -158,8 +147,7 @@ def main():
     # 현재 시간 출력 (디버깅 용도)
     now = time.strftime('%Y-%m-%d %H:%M:%S')
     print(now)
-
-
+       
 
 if __name__ == '__main__':
     main()

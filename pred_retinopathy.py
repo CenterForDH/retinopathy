@@ -119,7 +119,7 @@ def input_values():
 
 
 def main():
-    st.title("예측 모델")
+    st.title("Possibility of Retinopathy outcome within 3 years")
 
     # 사용자 입력 받기
     X_test = input_values()

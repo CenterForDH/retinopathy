@@ -3,4 +3,3 @@ xgboost==1.7.5
 pandas==1.5.3
 numpy==1.23.5
 matplotlib==3.7.1
-python==3.10.1

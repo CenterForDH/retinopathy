@@ -51,7 +51,7 @@ st.markdown(str(footerText), unsafe_allow_html=True)
 @st.cache_data
 #sub_finalized_model_adb predict_substance_model
 def model_file():
-    mfile = str(Path(__file__).parent) + '/pred_retinopathy.pkl'
+    mfile = str(Path(__file__).parent) + '/retinopathy.pkl'
     with open(mfile, 'rb') as file:
         model = pickle.load(file)
     return model

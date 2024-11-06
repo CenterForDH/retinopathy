@@ -67,10 +67,10 @@ def prediction(X_test):
     return result[0][1]
 
 def input_values():
-    age = st.number_input('나이', min_value=10, max_value=100, value=30)
+    age = st.number_input('Age', min_value=10, max_value=100, value=30)
     
-    sex = st.radio('성별', ('남자', '여자'), horizontal=True)
-    sexDict = {'남자': 1, '여자': 2}
+    sex = st.radio('Sex', ('Male', 'Female'), horizontal=True)
+    sexDict = {'Male': 1, 'Female': 2}
     sex = sexDict[sex]
 
     # 연속형 변수 입력 받기
